@@ -13,12 +13,13 @@
   --ink:#111827;--white:#fff;
 }
 *{box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
 body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:Pretendard,"Apple SD Gothic Neo",sans-serif;font-size:13px;letter-spacing:0}
 button,input,select{font:inherit}
 button{cursor:pointer}
-.app{display:grid;grid-template-columns:380px minmax(0,1fr);min-height:100vh}
-.sidebar{border-right:1px solid var(--line);background:#11151b;display:flex;flex-direction:column;min-width:0}
-.topbar{padding:16px 18px;border-bottom:1px solid var(--line)}
+.app{display:grid;grid-template-columns:380px minmax(0,1fr);height:100vh;min-height:0;overflow:hidden}
+.sidebar{border-right:1px solid var(--line);background:#11151b;display:flex;flex-direction:column;min-width:0;height:100vh;min-height:0;overflow:hidden}
+.topbar{flex:0 0 auto;padding:16px 18px;border-bottom:1px solid var(--line)}
 .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .title h1{font-size:18px;line-height:1.2;margin:0;font-weight:850}
 .mode{font-size:10px;color:var(--green);border:1px solid rgba(53,201,139,.45);background:rgba(53,201,139,.1);border-radius:999px;padding:3px 8px;font-weight:850}
@@ -29,7 +30,7 @@ button{cursor:pointer}
 .filters button{font-weight:850;color:var(--cyan)}
 .filters button:hover{border-color:var(--cyan);background:#1b222d}
 .meta-row{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:10px}
-.list{overflow:auto;padding:12px;display:flex;flex-direction:column;gap:9px}
+.list{flex:1 1 auto;min-height:0;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:9px}
 .list-group{display:grid;gap:8px}
 .list-group-title{position:sticky;top:-12px;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#11151b;border-bottom:1px solid rgba(255,255,255,.08);padding:7px 2px 5px;color:#c9d3df;font-size:11px;font-weight:900}
 .list-group-title span:last-child{color:var(--sub);font-weight:800}
@@ -54,7 +55,7 @@ button{cursor:pointer}
 .pill.warn{border-color:rgba(229,184,77,.45);color:var(--amber);background:rgba(229,184,77,.08)}
 .pill.internal{border-color:rgba(103,212,232,.42);color:var(--cyan);background:rgba(103,212,232,.09)}
 .pill.competitor{border-color:rgba(232,186,98,.42);color:var(--amber);background:rgba(232,186,98,.08)}
-.content{min-width:0;overflow:auto}
+.content{min-width:0;min-height:0;height:100vh;overflow:auto}
 .empty{height:100%;min-height:420px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;line-height:1.7}
 .detail{max-width:1680px;margin:0 auto;padding:18px 22px 36px}
 .analysis-head{border:1px solid #3a3a3a;background:#1c1d1b;border-radius:8px;padding:12px 14px;margin-bottom:14px}
@@ -107,7 +108,7 @@ button{cursor:pointer}
 .analysis-metric-card.has-zone-details{grid-column:1/-1}
 .analysis-metric-card.compact.has-zone-details .analysis-metric-value{display:block;-webkit-line-clamp:unset;overflow:visible}
 .analysis-metric-card.status-estimated_from_visual,.analysis-metric-card.status-inferred_from_guideline{border-color:rgba(232,186,98,.38);background:linear-gradient(180deg,rgba(232,186,98,.10),rgba(255,255,255,.03))}
-.analysis-metric-card.status-detected,.analysis-metric-card.status-visual_observation{border-color:rgba(120,216,155,.34);background:linear-gradient(180deg,rgba(120,216,155,.08),rgba(255,255,255,.03))}
+.analysis-metric-card.status-detected,.analysis-metric-card.status-visual_observation,.analysis-metric-card.status-derived_from_real_last_spec{border-color:rgba(120,216,155,.34);background:linear-gradient(180deg,rgba(120,216,155,.08),rgba(255,255,255,.03))}
 .analysis-metric-card.status-external_research{border-color:rgba(103,212,232,.34);background:linear-gradient(180deg,rgba(103,212,232,.09),rgba(255,255,255,.03))}
 .analysis-metric-card.status-needs_sample_measurement,.analysis-metric-card.status-recheck,.analysis-metric-card.status-not_found{border-color:rgba(229,111,106,.38);background:linear-gradient(180deg,rgba(229,111,106,.09),rgba(255,255,255,.03))}
 .analysis-metric-label{font-size:10.5px;color:#aaa89c;font-weight:760;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -115,7 +116,7 @@ button{cursor:pointer}
 .analysis-metric-value.needs{color:var(--red);font-size:14px;line-height:1.25}
 .value-number{color:var(--cyan);font-weight:920}
 .status-estimated_from_visual .value-number,.status-inferred_from_guideline .value-number{color:var(--amber)}
-.status-detected .value-number,.status-visual_observation .value-number{color:var(--green)}
+.status-detected .value-number,.status-visual_observation .value-number,.status-derived_from_real_last_spec .value-number{color:var(--green)}
 .value-unit{color:#d7d4c8;font-size:.84em;font-weight:760}
 .analysis-metric-meta{display:flex;gap:5px;flex-wrap:wrap}
 .analysis-source{font-size:10px;color:#aaa89c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -215,7 +216,7 @@ button{cursor:pointer}
 .zone-detail span{word-break:keep-all;overflow-wrap:break-word}
 .spec-meta{display:flex;flex-wrap:wrap;gap:5px}
 .spec-pill{min-height:20px;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:2px 7px;color:#aaa89c;background:rgba(255,255,255,.035);max-width:100%;font-size:11px;line-height:1.25}
-.spec-pill.detected,.spec-pill.visual_observation{color:var(--green);border-color:rgba(120,216,155,.3)}
+.spec-pill.detected,.spec-pill.visual_observation,.spec-pill.derived_from_real_last_spec{color:var(--green);border-color:rgba(120,216,155,.3)}
 .spec-pill.estimated_from_visual,.spec-pill.inferred_from_guideline{color:var(--amber);border-color:rgba(232,186,98,.34)}
 .spec-pill.external_research{color:var(--cyan);border-color:rgba(103,212,232,.34)}
 .spec-pill.conf-high{color:var(--green);border-color:rgba(120,216,155,.32)}
@@ -228,8 +229,10 @@ button{cursor:pointer}
 .spec-detail summary::-webkit-details-marker{display:none}
 pre{margin:0;border:1px solid var(--line);background:#090b0f;border-radius:8px;padding:14px;overflow:auto;color:#dce5f5;font-size:11px;line-height:1.6}
 @media (max-width:960px){
-  .app{grid-template-columns:1fr}
-  .sidebar{height:46vh;border-right:0;border-bottom:1px solid var(--line)}
+  html,body{overflow:hidden}
+  .app{grid-template-columns:1fr;grid-template-rows:46vh minmax(0,1fr);height:100vh}
+  .sidebar{height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .content{height:auto;min-height:0}
   .filters{grid-template-columns:1fr 1fr 1fr 120px}
   .filters input{grid-column:1/-1}
   .hero,.brief-grid{grid-template-columns:1fr}
@@ -645,7 +648,7 @@ function renderCompareSections(left,right){
 }
 
 function orderedCompareSections(sectionSets){
-  const priority=["last_spec","mold_spec","midsole_material_spec","outsole_spec","material_spec","arch_waist_spec","accessory_spec","pattern_analysis","biomechanics_analysis","color_spec","design_review"];
+  const priority=["last_spec","mold_spec","outsole_spec","material_spec","arch_waist_spec","midsole_material_spec","accessory_spec","pattern_analysis","biomechanics_analysis","color_spec","design_review"];
   const names=[...new Set(sectionSets.flatMap(sections=>Object.keys(visibleAnalysisSections(sections||{}))))];
   const order=new Map(priority.map((name,index)=>[name,index]));
   return names.sort((a,b)=>(order.get(a)??999)-(order.get(b)??999)||sectionLabel(a).localeCompare(sectionLabel(b),"ko"));
@@ -985,14 +988,15 @@ function renderSections(sections){
 }
 
 function orderedSectionEntries(sections){
-  const priority=["last_spec","mold_spec","midsole_material_spec","outsole_spec","material_spec","arch_waist_spec","accessory_spec","pattern_analysis","biomechanics_analysis","color_spec","design_review"];
+  const priority=["last_spec","mold_spec","outsole_spec","material_spec","arch_waist_spec","midsole_material_spec","accessory_spec","pattern_analysis","biomechanics_analysis","color_spec","design_review"];
   const entries=Object.entries(visibleAnalysisSections(sections||{}));
   const order=new Map(priority.map((name,index)=>[name,index]));
   return entries.sort(([a],[b])=>(order.get(a)??999)-(order.get(b)??999)||sectionLabel(a).localeCompare(sectionLabel(b),"ko"));
 }
 
 function visibleAnalysisSections(sections){
-  return Object.fromEntries(Object.entries(sections||{}).filter(([name])=>name!=="quality_checklist"));
+  const hiddenSections=new Set(["quality_checklist","internal_real_data"]);
+  return Object.fromEntries(Object.entries(sections||{}).filter(([name])=>!hiddenSections.has(name)));
 }
 
 function displaySpecFields(fields,sectionName=""){
@@ -1007,7 +1011,8 @@ function displaySpecFields(fields,sectionName=""){
     "pattern_no",
     "mold_no",
     "mold_number",
-    "mold_code"
+    "mold_code",
+    "mold_dim_drawing_last_no"
   ]);
   return fields.filter(field=>{
     const section=sectionName||field.section||"";
@@ -1115,7 +1120,7 @@ function confidenceClass(confidence){
 }
 
 function specPriority(key){
-  const order=["heel_midsole_height_mm","forefoot_midsole_height_mm","drop_mm","toe_spring_mm","heel_spring_mm","lug_height_mm","outsole_hardness","outsole_thickness","forefoot_contact_width_mm","heel_contact_width_mm","toe_box_height_mm","heel_cup_height_mm","instep_girth","ball_girth","bridge_thickness","waist_width_ratio","midsole_hardness_shore_c","outsole_rubber_coverage","target_weight_240mm","width_grade","toe_shape","mold_type"];
+  const order=["heel_midsole_height_mm","forefoot_midsole_height_mm","drop_mm","toe_spring_mm","heel_spring_mm","lug_height_mm","outsole_hardness","outsole_thickness","outsole_base_rubber_thickness_mm","outsole_local_pad_thickness_mm","outsole_lug_protrusion_mm","outsole_lug_block_thickness_mm","outsole_groove_depth_mm","forefoot_contact_width_mm","heel_contact_width_mm","toe_box_height_mm","heel_cup_height_mm","instep_girth","ball_girth","bridge_thickness","waist_width_ratio","midsole_hardness_shore_c","outsole_rubber_coverage","target_weight_240mm","width_grade","toe_shape","mold_type"];
   const index=order.indexOf(key);
   return index===-1?999:index;
 }
@@ -1324,7 +1329,7 @@ function normalizeOwnership(value){
   return "";
 }
 function ownershipLabel(value){return ({internal:"자사",competitor:"타사"}[value]||"미분류")}
-function statusLabel(value){return ({complete:"분석 완료",not_analyzed:"미분석",error:"오류",real_data:"실데이터",real_data_base_last_match:"기준 라스트 실데이터",detected:"감지",visual_observation:"시각 관찰",estimated_from_visual:"시각 추정",external_research:"외부 리서치",inferred_from_guideline:"지침 추론",needs_sample_measurement:"샘플 실측 필요",recheck:"재검수 필요",not_found:"자료 없음"}[value]||value||"상태 없음")}
+function statusLabel(value){return ({complete:"분석 완료",not_analyzed:"미분석",error:"오류",real_data:"실데이터",real_data_base_last_match:"기준 라스트 실데이터",derived_from_real_last_spec:"라스트 실측 파생",detected:"감지",visual_observation:"시각 관찰",estimated_from_visual:"시각 추정",external_research:"외부 리서치",inferred_from_guideline:"지침 추론",needs_sample_measurement:"샘플 실측 필요",recheck:"재검수 필요",not_found:"자료 없음"}[value]||value||"상태 없음")}
 function sectionLabel(value){return ({last_spec:"라스트",arch_waist_spec:"아치/허리",mold_spec:"몰드/금형",midsole_material_spec:"미드솔 물성",outsole_spec:"아웃솔 상세",material_spec:"소재",pattern_analysis:"패턴",accessory_spec:"부자재",biomechanics_analysis:"생체역학",color_spec:"컬러",design_review:"디자인",quality_checklist:"품질"}[value]||value)}
 function label(value){
   return ({
@@ -1333,7 +1338,7 @@ function label(value){
     waist_cut_depth:"허리 파임",arch_depth:"아치 깊이",waist_width_ratio:"허리폭 비율",bridge_thickness:"브릿지 두께",midfoot_stiffness:"중족부 강성",torsion_stiffness:"토션 강성",torsion_risk:"뒤틀림 리스크",
     mold_type:"몰드 타입",heel_midsole_height_mm:"힐 미드솔 높이",forefoot_midsole_height_mm:"전족부 미드솔 높이",drop_mm:"드롭",midsole_hardness_shore_c:"미드솔 경도 Shore C",outsole_rubber_coverage:"아웃솔 러버 커버리지",lug_height_mm:"러그 높이",lug_pattern:"러그 패턴",tooling_risk:"금형 리스크",mold_adjustment_type:"몰드 보정",heel_bulge:"힐 벌지",heel_outer_projection:"힐 외측 돌출",mold_shrinkage:"금형 수축",shrinkage_control:"수축 보정",target_weight_240mm:"목표 중량",
     midsole_material_candidates:"미드솔 후보",midsole_material_priority:"미드솔 우선순위",midsole_density_target:"밀도 타깃",midsole_gravity:"미드솔 비중",rebound:"반발탄성",compression_set:"압축변형률",yellowing_risk:"황변 리스크",hydrolysis_risk:"가수분해 리스크",midsole_rank:"미드솔 랭크",midsole_material_reason:"선정 이유",
-    outsole_hardness:"아웃솔 경도",outsole_thickness:"아웃솔 두께",rubber_gravity:"러버 비중",rubber_density:"러버 밀도",drain_depth:"배수 홈 깊이",contact_ratio:"접지 면적비",forefoot_rubber:"전족 러버",heel_rubber:"힐 러버",midfoot_rubber:"중족 러버",toe_tip_rubber:"토끝 러버",outsole_color:"아웃솔 컬러",outsole_structure:"아웃솔 구조",wet_slip_risk:"습식 미끄럼",
+    outsole_hardness:"아웃솔 경도",outsole_thickness:"아웃솔 두께 요약",outsole_base_rubber_thickness_mm:"베이스 러버 두께",outsole_local_pad_thickness_mm:"국부 패드/벽 두께",outsole_lug_protrusion_mm:"러그 돌출 높이",outsole_lug_block_thickness_mm:"러그 포함 최대 두께",outsole_groove_depth_mm:"홈/채널 깊이",rubber_gravity:"러버 비중",rubber_density:"러버 밀도",drain_depth:"배수 홈 깊이",contact_ratio:"접지 면적비",forefoot_rubber:"전족 러버",heel_rubber:"힐 러버",midfoot_rubber:"중족 러버",toe_tip_rubber:"토끝 러버",outsole_color:"아웃솔 컬러",outsole_structure:"아웃솔 구조",wet_slip_risk:"습식 미끄럼",
     mesh_type:"메쉬/니트 구조",synthetic_type:"합성 보강",nosew_film_present:"노쏘 필름",reinforcement_zones:"보강 위치",lining_visible:"라이닝 확인",material_durability_risk:"소재 내구 리스크",material_count:"소재 수",main_upper_material_candidates:"메인 어퍼 후보",synthetic_thickness:"신세틱 두께",mesh_weight:"메쉬 중량",mesh_zone:"메쉬 부위",rib_type:"립/리브 종류",rib_zone:"립 적용 부위",tongue_foam:"베라 폼",collar_padding:"카라 패딩",lining_foam:"내패딩",lining_foam_thickness:"내패딩 두께",
     pattern_line_type:"패턴 라인",overlay_zones:"오버레이 위치",vamp_line:"뱀프 라인",collar_shape:"카라 형태",heel_tab_style:"힐탭 형태",construction_method:"공법",alignment_risk:"정렬 리스크",minimum_curve_radius:"곡선 R",overlap_width_if_nosew:"노쏘 겹침",logo_position_tolerance:"로고 위치 공차",logo_width:"로고 폭",logo_height:"로고 높이",logo_method:"로고 공법",logo_position:"로고 위치",toe_cap_style:"토캡",heel_structure:"힐 구조",collar_structure:"카라 구조",vamp_method:"선포 공법",quarter_method:"측포 공법",tongue_deco_method:"베라 장식",tongue_foam_method:"베라 폼 공법",pattern_alignment_risk:"패턴 정렬 리스크",
     lace_type:"신끈 타입",lace_color:"신끈 컬러",lace_width:"신끈 폭",lace_length:"신끈 길이",insole_type:"인솔 타입",insole_material:"인솔 소재",insole_thickness:"인솔 두께",insole_fabric:"인솔 원단",heel_tab_material:"힐탭 소재",heel_tab_color:"힐탭 컬러",heel_tab_width:"힐탭 폭",woven_width:"직조 폭",label_size:"라벨 사이즈",heel_counter:"힐카운터",padding_foam_type:"패딩 폼 타입",
