@@ -327,7 +327,9 @@ async def run_detail(run_id: str) -> dict[str, Any]:
     return {"run": run, "mode": "postgres"}
 
 
-app.include_router(router, prefix=BASE_PATH)
+app.include_router(router)
+if BASE_PATH:
+    app.include_router(router, prefix=BASE_PATH)
 
 
 # ──────────────────────────────────────────────
