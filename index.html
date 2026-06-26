@@ -54,6 +54,7 @@ button{cursor:pointer}
 .pill.warn{border-color:rgba(229,184,77,.45);color:var(--amber);background:rgba(229,184,77,.08)}
 .pill.internal{border-color:rgba(103,212,232,.42);color:var(--cyan);background:rgba(103,212,232,.09)}
 .pill.competitor{border-color:rgba(232,186,98,.42);color:var(--amber);background:rgba(232,186,98,.08)}
+.pill.design{border-color:rgba(189,165,255,.46);color:#cdbdff;background:rgba(189,165,255,.10)}
 .content{min-width:0;overflow:auto}
 .empty{height:100%;min-height:420px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;line-height:1.7}
 .detail{max-width:1680px;margin:0 auto;padding:18px 22px 36px}
@@ -250,6 +251,7 @@ pre{margin:0;border:1px solid var(--line);background:#090b0f;border-radius:8px;p
 .own-btn.active[data-val=""]{border-color:rgba(103,212,232,.55);color:var(--cyan);background:rgba(103,212,232,.1)}
 .own-btn.active[data-val="internal"]{border-color:rgba(103,212,232,.55);color:var(--cyan);background:rgba(103,212,232,.1)}
 .own-btn.active[data-val="competitor"]{border-color:rgba(232,186,98,.55);color:var(--amber);background:rgba(232,186,98,.1)}
+.own-btn.active[data-val="design"]{border-color:rgba(189,165,255,.62);color:#cdbdff;background:rgba(189,165,255,.12)}
 /* ── Brand Map ── */
 .own-spacer{flex:1}
 .bm-icon-btn{width:28px;height:28px;padding:0;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;display:grid;place-items:center;transition:.15s;flex-shrink:0;cursor:pointer}
@@ -279,6 +281,7 @@ pre{margin:0;border:1px solid var(--line);background:#090b0f;border-radius:8px;p
 .bm-own-chip{font-size:9px;font-weight:850;border-radius:999px;padding:2px 7px}
 .bm-own-chip.internal{color:var(--cyan);border:1px solid rgba(103,212,232,.38);background:rgba(103,212,232,.07)}
 .bm-own-chip.competitor{color:var(--amber);border:1px solid rgba(232,186,98,.38);background:rgba(232,186,98,.07)}
+.bm-own-chip.design{color:#cdbdff;border:1px solid rgba(189,165,255,.42);background:rgba(189,165,255,.08)}
 .bm-section-line{flex:1;height:1px;background:rgba(255,255,255,.05)}
 .bm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px}
 .bm-card{border:1px solid var(--line);background:var(--panel);border-radius:8px;overflow:hidden;cursor:pointer;transition:.15s;position:relative}
@@ -309,6 +312,7 @@ pre{margin:0;border:1px solid var(--line);background:#090b0f;border-radius:8px;p
         <button class="own-btn active" data-val="" type="button" onclick="setOwnership(this)">전체</button>
         <button class="own-btn" data-val="internal" type="button" onclick="setOwnership(this)">자사</button>
         <button class="own-btn" data-val="competitor" type="button" onclick="setOwnership(this)">타사</button>
+        <button class="own-btn" data-val="design" type="button" onclick="setOwnership(this)">디자인</button>
         <span class="own-spacer"></span>
         <button class="bm-icon-btn" id="bmIconBtn" type="button" onclick="toggleBrandMap()" title="브랜드 전체 맵">
           <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -534,7 +538,9 @@ function renderCategoryFilter(){
 function normalizeProducts(products){
   return products.map(product=>{
     const metadata=product.metadata&&typeof product.metadata==="object"?product.metadata:{};
-    const ownership=normalizeOwnership(product.ownership||metadata.ownership||metadata.owner_type||metadata.source_scope||metadata.product_scope||metadata.company_scope);
+    const ownership=isDesignAnalysisProduct(product,metadata)
+      ?"design"
+      :normalizeOwnership(product.ownership||metadata.ownership||metadata.owner_type||metadata.source_scope||metadata.product_scope||metadata.company_scope);
     const normalized=ownership||"competitor";
     const rawCategory=product.category||metadata.category||metadata.product_type||"";
     const categoryGroup=product.category_group||metadata.category_group||(
@@ -604,7 +610,7 @@ function groupProducts(products){
     grouped.get(key).products.push(product);
   });
   return [...grouped.values()].sort((a,b)=>{
-    const ownerOrder={internal:0,competitor:1};
+    const ownerOrder={internal:0,competitor:1,design:2};
     return (ownerOrder[a.ownership]??9)-(ownerOrder[b.ownership]??9)||a.brand.localeCompare(b.brand,"ko");
   });
 }
@@ -1496,13 +1502,31 @@ function compact(value,max){const out=text(value).replace(/\s+/g," ").trim();ret
 function normalizeOwnership(value){
   const raw=String(value||"").trim().toLowerCase();
   if(!raw) return "";
+  if(["design","designer","ai_design","ai-design","concept_design","design_concept","디자인","시안","디자인분석","시안분석"].includes(raw)) return "design";
   if(["internal","own","owned","inhouse","in-house","our","ours","company","fnf","f&f","self","자사","내부","당사","자체"].includes(raw)) return "internal";
   if(["competitor","external","market","benchmark","third_party","third-party","other","rival","타사","외부","경쟁사","벤치마크"].includes(raw)) return "competitor";
+  if(["design","designer","ai_design","ai-design","design_concept","디자인","시안"].some(token=>raw.includes(token))) return "design";
   if(["자사","내부","당사","own","internal","inhouse","in-house"].some(token=>raw.includes(token))) return "internal";
   if(["타사","외부","경쟁","competitor","external","benchmark"].some(token=>raw.includes(token))) return "competitor";
   return "";
 }
-function ownershipLabel(value){return ({internal:"자사",competitor:"타사"}[value]||"미분류")}
+function ownershipLabel(value){return ({internal:"자사",competitor:"타사",design:"디자인"}[value]||"미분류")}
+function isDesignAnalysisProduct(product,metadata={}){
+  const haystack=[
+    product?.source_url,
+    product?.source_system,
+    product?.site,
+    product?.analysis_source,
+    product?.product_scope,
+    metadata?.source_url,
+    metadata?.source_system,
+    metadata?.site,
+    metadata?.analysis_source
+  ].map(value=>String(value||"").toLowerCase()).join(" ");
+  return haystack.includes("designer_ai_concept_image")
+    ||haystack.includes("design_concept_claude_api_analyzer")
+    ||haystack.includes("ai_design_concept");
+}
 function normalizeCategory(value){
   const raw=String(value||"").trim().toLowerCase();
   if(!raw) return "lifestyle_fashion";

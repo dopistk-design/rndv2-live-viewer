@@ -82,7 +82,32 @@ def _jsonify(v):
 # ──────────────────────────────────────────────
 # 자사/타사 판별 (DB에 ownership 컬럼 없음 → 브랜드/site로 추론)
 # ──────────────────────────────────────────────
-_INTERNAL_BRANDS = {"discovery expedition", "f&f", "ff"}
+_INTERNAL_BRANDS = {"discovery expedition", "discovery", "디스커버리", "sergio tacchini", "세르지오타키니", "duvetica", "듀베티카", "f&f", "ff"}
+_DESIGN_ANALYSIS_SOURCE_URL = "designer_ai_concept_image"
+
+
+def _is_design_analysis_product(p: dict) -> bool:
+    """Claude API 디자인 시안 분석기가 적재한 product/run 여부."""
+    metadata = _jsonify(p.get("metadata")) or {}
+    haystack = " ".join(
+        str(value or "")
+        for value in (
+            p.get("source_url"),
+            p.get("source_system"),
+            p.get("site"),
+            p.get("analysis_source"),
+            p.get("product_scope"),
+            metadata.get("source_url") if isinstance(metadata, dict) else "",
+            metadata.get("source_system") if isinstance(metadata, dict) else "",
+            metadata.get("site") if isinstance(metadata, dict) else "",
+            metadata.get("analysis_source") if isinstance(metadata, dict) else "",
+        )
+    ).lower()
+    return (
+        _DESIGN_ANALYSIS_SOURCE_URL in haystack
+        or "design_concept_claude_api_analyzer" in haystack
+        or "ai_design_concept" in haystack
+    )
 
 def _ownership(brand: str, site: str = "") -> str:
     """brand 또는 site='internal' 이면 'internal', 아니면 'competitor'."""
@@ -231,6 +256,7 @@ def _product_row_to_api(p: dict, latest_analysis: dict | None) -> dict:
     run_id  = latest_analysis["analysis_id"] if latest_analysis else None
     updated = str(latest_analysis.get("uploaded_at") or latest_analysis.get("created_at") or "") if latest_analysis else ""
     category = _shoe_category(p)
+    ownership = "design" if _is_design_analysis_product(p) else _ownership(p.get("brand", ""), p.get("site", ""))
     return {
         "product_id":              p["product_id"],
         "brand":                   p.get("brand", ""),
@@ -241,14 +267,16 @@ def _product_row_to_api(p: dict, latest_analysis: dict | None) -> dict:
         "price":                   float(p["price"]) if p.get("price") else None,
         "currency":                p.get("currency", ""),
         "source_url":              p.get("source_url") or p.get("final_url", ""),
+        "source_system":           p.get("source_system", ""),
+        "site":                    p.get("site", ""),
         "analysis_count":          1 if latest_analysis else 0,
         "latest_run_id":           run_id,
         "latest_run_updated_at":   updated,
         "analysis_status":         "complete" if latest_analysis else "not_analyzed",
         "representative_image_url": p.get("representative_image_url", ""),
         "image_urls":              _jsonify(p.get("image_urls")) or {},
-        "ownership":               _ownership(p.get("brand", ""), p.get("site", "")),
-        "ownership_label":         "자사" if _ownership(p.get("brand", ""), p.get("site", "")) == "internal" else "타사",
+        "ownership":               ownership,
+        "ownership_label":         {"internal": "자사", "competitor": "타사", "design": "디자인"}.get(ownership, "미분류"),
         "category":                category["category_label"],
         "category_group":          category["category_group"],
         "category_label":          category["category_label"],
